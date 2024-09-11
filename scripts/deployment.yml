@@ -1,1 +1,43 @@
-# Write Kubernetes Deployment Script
+# Write Kubernetes Deployment Script#
+# To deploy:
+#
+# kubectl apply -f scripts/deployment.yml
+#
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers: 
+      - name: book-catalog
+        image: book-catalog:1
+        imagePullPolicy: Never
+        env:
+        - name: PORT
+          value: "4000"
+        - name: DATABASE_URL
+          value: "postgresql://chloe_sit722_utp9_user:1Gkc0ackYkMP47tgwAQSnPT5otGvH6Py@dpg-crgl2i2j1k6c739j2gcg-a.singapore-postgres.render.com/chloe_sit722_utp9"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog
+spec:
+  selector:
+    app: book-catalog
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4000
+      nodePort: 30000
